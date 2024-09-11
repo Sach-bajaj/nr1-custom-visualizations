@@ -110,7 +110,7 @@ Finally, using your application’s `uuid``, un-deploy your application:
 ```
 nr1 nerdpack:undeploy --nerdpack-id=xxxxx
 ```
-Reference
-https://developer.newrelic.com/explore-docs/nr1-nerdpack/#nr1-nerdpackuntag
+## Reference
+https://developer.newrelic.com/explore-docs/nr1-nerdpack/#nr1-nerdpackuntag  
 https://developer.newrelic.com/build-apps/publish-deploy/subscribe/
 
