@@ -1,8 +1,8 @@
 {
     "schemaType": "VISUALIZATION",
     "id": "radar-chart",
-    "displayName": "RadarChart",
-    "description": "",
+    "displayName": "Radar Chart",
+    "description": "Radar chart visualization",
     "configuration": [
         {
             "name": "nrqlQueries",

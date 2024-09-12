@@ -17,9 +17,35 @@ export default class SimpleBarChartVisualization extends React.Component {
     transformData = (rawData) => {
         const transformedData = [];
         const chartColors = {};
+
+        // Helper function to convert hex color to RGB
+        const hexToRgb = (hex) => {
+            let r = parseInt(hex.slice(1, 3), 16);
+            let g = parseInt(hex.slice(3, 5), 16);
+            let b = parseInt(hex.slice(5, 7), 16);
+            return { r, g, b };
+        };
+
+        // Helper function to convert RGB back to hex
+        const rgbToHex = (r, g, b) => {
+            return (
+                "#" +
+                [r, g, b].map((x) => {
+                    const hex = x.toString(16);
+                    return hex.length === 1 ? "0" + hex : hex;
+                }).join("")
+            );
+        };
+
+        // Helper function to invert a hex color
+        const invertColor = (hex) => {
+            const { r, g, b } = hexToRgb(hex);
+            return rgbToHex(255 - r, 255 - g, 255 - b);
+        };
     
         // Construct the initial data structure from the raw data
         rawData.forEach(({ metadata, data }) => {
+            // console.log(rawData);
             const facet1 = metadata.groups[1].value;
             const facet2 = metadata.groups[2].value;
     
@@ -32,23 +58,51 @@ export default class SimpleBarChartVisualization extends React.Component {
     
             // Assign the data and color
             entry[facet2] = data[0].y;
-            chartColors[facet2] = metadata.color;
+            chartColors[facet2] = invertColor(metadata.color);
         });
     
         // Now sort the transformed data by the 'name' property (alphabetically)
         const sortedTransformedData = transformedData.sort((a, b) => {
-            return a.name.localeCompare(b.name);
+            const aName = a.name, bName = b.name;
+            const aIsNumber = !isNaN(Number(aName));
+            const bIsNumber = !isNaN(Number(bName));
+        
+            // If both are numbers, compare as numbers
+            if (aIsNumber && bIsNumber) {
+                return Number(aName) - Number(bName);
+            }
+        
+            // If one is a number and the other isn't, the number comes first
+            if (aIsNumber) return -1;
+            if (bIsNumber) return 1;
+        
+            // If both are not numbers, compare as strings
+            return aName.localeCompare(bName);
         });
-    
+
+        // As we need to return the yAxisLabel too, let's fetch it here
+        const yAxisLabel = rawData && rawData.length > 0 && rawData[0].metadata.groups[0].displayName
+        ? rawData[0].metadata.groups[0].displayName
+        : 'Y-Axis'; // Default label if none found
+
         return {
             data: sortedTransformedData,
             chartColors,
+            yAxisLabel // Include this additional field to hold the Y-Axis Label
         };
     };
 
     // Format the tick presentation on the XAxis
     formatTick = (tickItem) => {
         return tickItem.toString();
+    };
+
+    // Formatter function to round values to two decimal places
+    tooltipFormatter = (value) => {
+        return value.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
     };
 
     render() {
@@ -75,27 +129,29 @@ export default class SimpleBarChartVisualization extends React.Component {
                                 return <ErrorState />;
                             }
         
-                            const { data: transformedData, chartColors } = this.transformData(data);
+                            const { data: transformedData, chartColors, yAxisLabel } = this.transformData(data);
                             
                             // Extract the keys for the countries across all transformed data
-                            const countryKeys = transformedData
+                            const facetKeys = transformedData
                                 .flatMap(entry => Object.keys(entry))
                                 .filter(key => key !== 'name');
-                            const uniqueCountryKeys = Array.from(new Set(countryKeys));
+                            const uniqueFacetKeys = Array.from(new Set(facetKeys));
         
                             return (
                                 <BarChart
-                                    width={width}
-                                    height={height}
+                                    width={width-30}
+                                    height={height-20}
                                     data={transformedData}
-                                    margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+                                    margin={{ top: 20, right: 30, left: 50, bottom: 20 }}
                                     barCategoryGap={'10%'}
                                 >
                                     <XAxis dataKey="name" />
-                                    <YAxis />
-                                    <Tooltip />
+                                    <YAxis 
+                                        tickFormatter={(value) => value.toLocaleString()}
+                                        label={{ value: yAxisLabel, angle: -90, position: 'insideLeft', offset: -35, style: { fontWeight: 'bold' } }} />
+                                    <Tooltip formatter={this.tooltipFormatter} />
                                     <Legend />
-                                    {uniqueCountryKeys.map(facet2 => (
+                                    {uniqueFacetKeys.map(facet2 => (
                                         <Bar
                                             key={facet2}
                                             dataKey={facet2}
