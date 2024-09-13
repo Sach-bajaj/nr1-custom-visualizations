@@ -1,5 +1,9 @@
-# nr1-recharts-visualization
+# nr1-charts-visualization
 A custom visualization Nerdpack for New Relic containing charts not found in New Relic by default.
+
+### Grouped Bar Chart
+This is a Grouped Bar Chart with two FACETs made with Plotly.
+![Grouped Bar Chart](/visualizations/grouped-bar-chart/grouped-bar-chart.png)
 
 ### Simple Bar Chart
 This is a Grouped Bar Chart with two FACETs.
