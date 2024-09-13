@@ -1,6 +1,6 @@
 {
-    "schemaType": "NERDPACK",
-    "id": "726463bb-e35e-424a-8257-4ea8c46cff30",
-    "displayName": "Charts Visualization",
-    "description": "Visualizations built on libraries such as Plotly and Recharts"
+  "schemaType": "NERDPACK",
+  "id": "92c4ab59-fd2e-4ae6-8946-ad8f4626cba3",
+  "displayName": "Charts Visualization",
+  "description": "Visualizations built on libraries such as Plotly and Recharts"
 }
