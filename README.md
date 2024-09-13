@@ -1,4 +1,4 @@
-# nr1-charts-visualization
+# nr1-custom-visualizations
 A custom visualization Nerdpack for New Relic containing charts not found in New Relic by default.
 
 ### Grouped Bar Chart
@@ -69,8 +69,8 @@ rm -fr xxxx xxxx xxxx ...
 ## Setup NerdPack
 
 ```
-git clone https://github.com/pnvnd/nr1-charts-visualization.git
-cd nr1-charts-visualization
+git clone https://github.com/pnvnd/nr1-custom-visualizations.git
+cd nr1-custom-visualizations
 npm install
 nr1 nerdpack:uuid --generate --force
 ```
