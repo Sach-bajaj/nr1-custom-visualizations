@@ -1,18 +1,27 @@
 # nr1-custom-visualizations
 A custom visualization Nerdpack for New Relic containing charts not found in New Relic by default.
 
+## Plotly
+The following charts are made with Plotly.
+
 ### Grouped Bar Chart
 This is a Grouped Bar Chart with two FACETs made with Plotly.
-![Grouped Bar Chart](/visualizations/grouped-bar-chart/grouped-bar-chart.png)
+![Grouped Bar Chart](/visualizations/plotly-grouped-bar-chart/grouped-bar-chart.png)
+
+## Recharts
+THe following charts are made with Recharts.
 
 ### Simple Bar Chart
-This is a Grouped Bar Chart with two FACETs.
-![Simple Bar Chart](/visualizations/simple-bar-chart/simple-bar-chart.png)
+Made with Recharts, this is a Grouped Bar Chart is used with two FACETs.
+![Simple Bar Chart](/visualizations/recharts-simple-bar-chart/simple-bar-chart.png)
+
+### Treemap
+Made with Recharts, this Treemap is animated.
 
 ### Radar Chart
 This is the default visualzation when you create a custom visualization:  
 https://docs.newrelic.com/docs/new-relic-solutions/build-nr-ui/custom-visualizations/build-visualization/
-![Radar Chart](/visualizations/radar-chart/radar-chart.png)
+![Radar Chart](/visualizations/recharts-radar-chart/radar-chart.png)
 
 ## Prerequisites
 
