@@ -65,8 +65,8 @@ rm -fr xxxx xxxx xxxx ...
 ## Setup NerdPack
 
 ```
-git clone https://github.com/pnvnd/nr1-recharts-visualization.git
-cd nr1-recharts-visualization
+git clone https://github.com/pnvnd/nr1-charts-visualization.git
+cd nr1-charts-visualization
 npm install
 nr1 nerdpack:uuid --generate --force
 ```
