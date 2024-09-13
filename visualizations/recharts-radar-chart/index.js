@@ -132,7 +132,7 @@ const EmptyState = () => (
                 An example NRQL query you can try is:
             </HeadingText>
             <code>
-                FROM NrUsage SELECT sum(usage) FACET metric SINCE 1 week ago
+                SELECT sum(GigabytesIngested) FROM NrConsumption WHERE usageMetric!='MetricsBytes' FACET usageMetric SINCE 1 MONTH AGO
             </code>
         </CardBody>
     </Card>

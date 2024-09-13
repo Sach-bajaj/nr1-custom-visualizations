@@ -1,6 +1,6 @@
 {
     "schemaType": "VISUALIZATION",
-    "id": "grouped-bar-chart",
+    "id": "plotly-grouped-bar-chart",
     "displayName": "Grouped Bar Chart",
     "description": "A simple bar chart made with Plotly",
     "configuration": [

@@ -1,8 +1,8 @@
 {
   "schemaType": "VISUALIZATION",
-  "id": "radar-or-treemap",
-  "displayName": "RadarOrTreemap",
-  "description": "",
+  "id": "recharts-radar-or-treemap",
+  "displayName": "Radar or Treemap",
+  "description": "Choose between Radar or Treemap from Recharts",
   "configuration": [
     {
       "name": "selectedChart",

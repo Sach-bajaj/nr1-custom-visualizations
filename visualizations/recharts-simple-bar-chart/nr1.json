@@ -1,8 +1,8 @@
 {
     "schemaType": "VISUALIZATION",
-    "id": "simple-bar-chart",
+    "id": "recharts-simple-bar-chart",
     "displayName": "Simple Bar Chart",
-    "description": "Also known as a grouped bar chart",
+    "description": "Made with Recharts, also known as a grouped bar chart",
     "configuration": [
         {
             "name": "nrqlQueries",

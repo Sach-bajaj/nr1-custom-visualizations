@@ -1,6 +1,6 @@
 {
     "schemaType": "VISUALIZATION",
-    "id": "radar-chart",
+    "id": "recharts-radar-chart",
     "displayName": "Radar Chart",
     "description": "Radar chart visualization",
     "configuration": [

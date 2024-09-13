@@ -9,7 +9,7 @@ This is a Grouped Bar Chart with two FACETs made with Plotly.
 ![Grouped Bar Chart](/visualizations/plotly-grouped-bar-chart/grouped-bar-chart.png)
 
 ## Recharts
-THe following charts are made with Recharts.
+The following charts are made with Recharts.
 
 ### Simple Bar Chart
 Made with Recharts, this is a Grouped Bar Chart is used with two FACETs.
@@ -17,6 +17,7 @@ Made with Recharts, this is a Grouped Bar Chart is used with two FACETs.
 
 ### Treemap
 Made with Recharts, this Treemap is animated.
+![Treemap Chart](/visualizations/recharts-radar-or-treemap/treemap-chart.png)
 
 ### Radar Chart
 This is the default visualzation when you create a custom visualization:  
