@@ -1,0 +1,27 @@
+{
+    "schemaType": "VISUALIZATION",
+    "id": "plotly-100-stacked-bar-chart",
+    "displayName": "100% Stacked Bar Chart",
+    "description": "A 100% Stacked Bar Chart made with Plotly",
+    "configuration": [
+        {
+            "name": "nrqlQueries",
+            "title": "NRQL Queries",
+            "type": "collection",
+            "items": [
+                {
+                    "name": "accountId",
+                    "title": "Account ID",
+                    "description": "Account ID to be associated with the query",
+                    "type": "account-id"
+                },
+                {
+                    "name": "query",
+                    "title": "Query",
+                    "description": "NRQL query for visualization",
+                    "type": "nrql"
+                }
+            ]
+        }
+    ]
+}

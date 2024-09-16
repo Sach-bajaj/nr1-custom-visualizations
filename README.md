@@ -8,6 +8,10 @@ The following charts are made with Plotly.
 This is a Grouped Bar Chart with two FACETs made with Plotly.
 ![Grouped Bar Chart](/visualizations/plotly-grouped-bar-chart/grouped-bar-chart.png)
 
+### 100% Stacked Bar Chart
+A variation on the stacked bar chart where each bar adds up to 100%.
+![100% Stacked Bar Chart](/visualizations/plotly-100-stacked-bar-chart/100-stacked-bar-chart.png)
+
 ## Recharts
 The following charts are made with Recharts.
 
