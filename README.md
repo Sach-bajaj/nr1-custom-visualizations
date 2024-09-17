@@ -9,8 +9,12 @@ This is a Grouped Bar Chart with two FACETs made with Plotly.
 ![Grouped Bar Chart](/visualizations/plotly-grouped-bar-chart/grouped-bar-chart.png)
 
 ### 100% Stacked Bar Chart
-A variation on the stacked bar chart where each bar adds up to 100%.
+A variation on the stacked bar chart where each bar adds up to 100% using two FACETs.
 ![100% Stacked Bar Chart](/visualizations/plotly-100-stacked-bar-chart/100-stacked-bar-chart.png)
+
+### Pareto Chart
+Using a single FACET we can get a pareto chart.
+![100% Stacked Bar Chart](/visualizations/plotly-pareto-chart/pareto-chart.png)
 
 ## Recharts
 The following charts are made with Recharts.
