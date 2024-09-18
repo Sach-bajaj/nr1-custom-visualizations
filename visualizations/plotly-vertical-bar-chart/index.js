@@ -3,7 +3,22 @@ import PropTypes from 'prop-types';
 import { Card, CardBody, HeadingText, NrqlQuery, Spinner, AutoSizer } from 'nr1';
 import Plot from 'react-plotly.js';
 
-export default class GroupedBarChartVisualization extends React.Component {
+// Define the color sequence directly within the code
+const PLOTLY_COLORS = [
+    '#636EFA',
+    '#EF553B',
+    '#00CC96',
+    '#AB63FA',
+    '#FFA15A',
+    '#19D3F3',
+    '#FF6692',
+    '#B6E880',
+    '#FF97FF',
+    '#FECB52'
+    // Add more colors if you have more bars than the number of colors here
+];
+
+export default class VerticalBarChartVisualization extends React.Component {
     static propTypes = {
         nrqlQueries: PropTypes.arrayOf(
             PropTypes.shape({
@@ -15,43 +30,33 @@ export default class GroupedBarChartVisualization extends React.Component {
 
     transformData = (rawData) => {
         const transformedData = [];
-    
-        // Construct the initial data structure from the raw data
-        rawData.forEach(({ metadata, data }) => {
-            console.log(rawData);
-            const facet1 = metadata.groups[1].value;
-            const facet2 = metadata.groups[2].value;
-    
-            // Find or create an entry for facet1Value
-            let entry = transformedData.find(e => e.name === facet1);
-            if (!entry) {
-                entry = { name: facet1 };
-                transformedData.push(entry);
-            }
-    
-            // Assign the data
-            entry[facet2] = data[0].y;
 
+        // Construct the initial data structure from raw data
+        rawData.forEach(({ metadata, data }) => {
+            const facet1 = metadata.groups[1].value;
+            const value = data[0].y;
+            transformedData.push({ name: facet1, value });
         });
-    
-        // As we need to return the yAxisLabel too, let's fetch it here
-        const yAxisLabel = rawData && rawData.length > 0 && rawData[0].metadata.groups[0].displayName
-        ? rawData[0].metadata.groups[0].displayName
-        : 'Y-Axis'; // Default label if none found
+
+        // Sort the transformedData by value in descending order
+        transformedData.sort((a, b) => b.value - a.value);
+
+        // Map to x and y for the bars
+        const barData = transformedData.map((entry) => entry.value);
 
         return {
-            data: transformedData,
-            yAxisLabel // Include this additional field to hold the Y-Axis Label
+            barData,
+            categories: transformedData.map(entry => entry.name) // The names for the x-axis categories.
         };
     };
 
     render() {
         const { nrqlQueries } = this.props;
-        
+
         if (!nrqlQueries || !nrqlQueries.length || !nrqlQueries[0].accountId || !nrqlQueries[0].query) {
             return <EmptyState />;
         }
-        
+
         return (
             <AutoSizer>
                 {({ width, height }) => (
@@ -64,37 +69,57 @@ export default class GroupedBarChartVisualization extends React.Component {
                             if (loading) {
                                 return <Spinner />;
                             }
-        
+
                             if (error) {
                                 return <ErrorState />;
                             }
-        
-                            const { data: transformedData, yAxisLabel } = this.transformData(data);
-                            
-                            // Extract the keys for facets across all transformed data
-                            const facetKeys = transformedData
-                                .flatMap(entry => Object.keys(entry))
-                                .filter(key => key !== 'name');
-                            const uniqueFacetKeys = Array.from(new Set(facetKeys));
-        
-                            // Prepare data for Plotly
-                            const plotlyData = uniqueFacetKeys.map(facet2 => ({
-                                x: transformedData.map(entry => entry.name),
-                                y: transformedData.map(entry => entry[facet2] || 0),
-                                type: 'bar',
-                                name: facet2,
-                                hoverlabel: { namelength: -1 } // display full text without truncation
-                            }));
-                            
+
+                            const { barData, categories } = this.transformData(data);
+
+                            // Fetch the axis labels
+                            const xAxisLabel = data && data[0].metadata.groups[0].displayName;
+                            const yAxisLabel = data && data[0].metadata.groups[1].displayName;
+
+                            // Prepare data for Plotly - updated for vertical bar chart
+                            const plotlyData = [
+                                {
+                                    x: categories,
+                                    y: barData,
+                                    type: 'bar', // This creates vertical bars
+                                    orientation: 'v', // This line can be omitted as 'v' is the default value
+                                    marker: {
+                                        color: barData.map((_, i) => PLOTLY_COLORS[i % PLOTLY_COLORS.length])
+                                    },
+                                    hoverlabel: { namelength: -1 }
+                                }
+                            ];
+
                             // Create the layout
                             const layout = {
                                 barmode: 'group',
                                 xaxis: {
-                                    automargin: true 
+                                    title: {
+                                        text: xAxisLabel,
+                                        font: {
+                                            weight: 'bold'
+                                        }
+                                    },
+                                    automargin: true,
+                                    showgrid: true,
+                                    tickmode: 'array',
+                                    tickvals: categories.map((c, index) => index),
+                                    ticktext: categories,
                                 },
                                 yaxis: {
-                                    title: yAxisLabel,
-                                    automargin: true
+                                    title: {
+                                        text: yAxisLabel,
+                                        font: {
+                                            weight: 'bold'
+                                        }
+                                    },
+                                    automargin: true,
+                                    showgrid: true,
+                                    zeroline: false
                                 }
                             };
 
@@ -133,10 +158,10 @@ const EmptyState = () => (
                 spacingType={[HeadingText.SPACING_TYPE.MEDIUM]}
                 type={HeadingText.TYPE.HEADING_4}
             >
-                An example NRQL query you can try is:
+                An example NRQL query you can try is (remember to only use ONE facet):
             </HeadingText>
             <code>
-                SELECT average(pageRenderingDuration) FROM PageView FACET userAgentName, countryCode SINCE 1 MONTH AGO
+                SELECT median(duration) AS 'Median Duration (s)' FROM PageView FACET countryCode AS 'Country' SINCE 3 MONTHS AGO LIMIT MAX
             </code>
         </CardBody>
     </Card>

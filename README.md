@@ -16,6 +16,14 @@ A variation on the stacked bar chart where each bar adds up to 100% using two FA
 Using a single FACET we can get a pareto chart.
 ![100% Stacked Bar Chart](/visualizations/plotly-pareto-chart/pareto-chart.png)
 
+### Vertical Bar Chart
+Using a single FACET we can get a vertical bar chart with grid enabled.
+![100% Stacked Bar Chart](/visualizations/plotly-vertical-bar-chart/vertical-bar-chart.png)
+
+### Horizontal Bar Chart
+Using a single FACET we can get a horizontal bar chart with grid enabled.
+![100% Stacked Bar Chart](/visualizations/plotly-horizontal-bar-chart/horizontal-bar-chart.png)
+
 ## Recharts
 The following charts are made with Recharts.
 
