@@ -1,6 +1,7 @@
 {
   "schemaType": "NERDPACK",
   "id": "92c4ab59-fd2e-4ae6-8946-ad8f4626cba3",
-  "displayName": "Charts Visualization",
-  "description": "Visualizations built on libraries such as Plotly and Recharts"
+  "displayName": "NR1 Custom Visualizations",
+  "description": "Visualizations built on libraries such as Plotly and Recharts",
+  "repositoryUrl": "https://github.com/pnvnd/nr1-custom-visualizations"
 }

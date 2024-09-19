@@ -1,7 +1,8 @@
 {
     "private": true,
-    "name": "nr1-charts-visualization",
-    "version": "0.1.0",
+    "name": "nr1-custom-visualizations",
+    "description": "Various custom visualizations",
+    "version": "0.2.0",
     "scripts": {
         "start": "nr1 nerdpack:serve",
         "test": "exit 0"
