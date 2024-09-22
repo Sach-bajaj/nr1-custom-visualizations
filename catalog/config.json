@@ -1,0 +1,19 @@
+{
+    "tagline": "NR1 Custom Visualizations",
+    "details": "This Nerdpack includes custom visualizations created with Plotly and Recharts (built and maintained by Peter Nguyen).\n\nSupport\n\nThis Nerdpack is provided as-is. You are responsible for your own deployment.",
+    "categoryTerms": [],
+    "keywords": ["visualizations", "plotly", "recharts"],
+    "repository": "https://github.com/pnvnd/nr1-custom-visualizations",
+    "whatsNew": "Added visualizations for horizonal and vertical bar charts\nUpdated examples in documentation\nUpdated screenshots",
+    "support": {
+      "email": {
+        "address": "peternguyen@newrelic.com"
+      },
+      "issues": {
+        "url": "https://github.com/pnvnd/nr1-custom-visualizations/issues"
+      },
+      "community": {
+        "url": "https://github.com/pnvnd/nr1-custom-visualizations/discussions"
+      }
+    }
+  }

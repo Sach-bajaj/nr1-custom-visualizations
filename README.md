@@ -8,21 +8,68 @@ The following charts are made with Plotly.
 This is a Grouped Bar Chart with two FACETs made with Plotly.
 ![Grouped Bar Chart](/visualizations/plotly-grouped-bar-chart/grouped-bar-chart.png)
 
+#### Use Cases
+Break down response times by browser and country.
+```sql
+SELECT average(duration)
+FROM PageView
+WHERE appName='my-web-app'
+FACET userAgentName, countryCode
+SINCE THIS MONTH LIMIT MAX
+```
+
 ### 100% Stacked Bar Chart
 A variation on the stacked bar chart where each bar adds up to 100% using two FACETs.
 ![100% Stacked Bar Chart](/visualizations/plotly-100-stacked-bar-chart/100-stacked-bar-chart.png)
+
+#### Use Cases
+Looking at the adoption of newer mobile app versions over time
+```sql
+SELECT count(*)
+FROM MobileSession
+WHERE entity.name='my-mobile-app'
+FACET weekOf(timestamp), appVersion
+SINCE THIS MONTH LIMIT MAX
+```
 
 ### Pareto Chart
 Using a single FACET we can get a pareto chart.
 ![100% Stacked Bar Chart](/visualizations/plotly-pareto-chart/pareto-chart.png)
 
+#### Use Cases
+Check data ingest relative to usage type and see cumaltive percentage on the same chart.
+```sql
+SELECT sum(GigabytesIngested)
+FROM NrConsumption
+FACET usageMetric
+SINCE THIS MONTH LIMIT MAX
+```
+
 ### Vertical Bar Chart
 Using a single FACET we can get a vertical bar chart with grid enabled.
 ![100% Stacked Bar Chart](/visualizations/plotly-vertical-bar-chart/vertical-bar-chart.png)
 
+#### Use Cases
+Analyze data with fixed time period with one FACET to get non-timeseries bar chart.
+```sql
+SELECT median(duration)
+FROM PageView
+FACET countryCode
+SINCE THIS MONTH LIMIT MAX
+```
+
 ### Horizontal Bar Chart
 Using a single FACET we can get a horizontal bar chart with grid enabled.
 ![100% Stacked Bar Chart](/visualizations/plotly-horizontal-bar-chart/horizontal-bar-chart.png)
+
+#### Use Cases
+Analyze data with fixed time period with one FACET to get non-timeseries bar chart.
+```sql
+SELECT median(duration)
+FROM PageView
+FACET countryCode
+SINCE THIS MONTH LIMIT MAX
+```
 
 ## Recharts
 The following charts are made with Recharts.
@@ -92,7 +139,7 @@ ls
 rm -fr xxxx xxxx xxxx ...
 ```
 
-## Setup NerdPack
+## Install NerdPack
 
 ```
 git clone https://github.com/pnvnd/nr1-custom-visualizations.git
@@ -130,17 +177,22 @@ nr1 nerdpack:publish
 Then, you can subscribe to the new version of the application from the New Relic user interface.
 
 ## Uninstall Nerdpack
-To uninstall the Nerdpack completely, get the `uuid` for your application. One example:
+To uninstall the Nerdpack completely, get the `uuid` for your application (usually from the `package.json` file). One example:
 ```
 nr1 subscription:list
 ```
 Then, in the New Relic user interface, unsubscribe from the application for ALL accounts.
+```
+nr1 subscription:unset --nerdpack-id=xxxxx
+```
 
 Finally, using your application’s `uuid``, un-deploy your application:
 ```
 nr1 nerdpack:undeploy --nerdpack-id=xxxxx
 ```
+
+You may have to log out and log back in to see the changes.
 ## Reference
-https://developer.newrelic.com/explore-docs/nr1-nerdpack/#nr1-nerdpackuntag  
-https://developer.newrelic.com/build-apps/publish-deploy/subscribe/
+https://docs.newrelic.com/docs/new-relic-solutions/build-nr-ui/nr1-cli/nr1-nerdpack/
+https://docs.newrelic.com/docs/new-relic-solutions/build-nr-ui/nr1-cli/nr1-subscription/
 
