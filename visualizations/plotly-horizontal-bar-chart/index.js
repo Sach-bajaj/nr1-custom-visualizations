@@ -2,21 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Card, CardBody, HeadingText, NrqlQuery, Spinner, AutoSizer } from 'nr1';
 import Plot from 'react-plotly.js';
-
-// Define the color sequence directly within the code
-const PLOTLY_COLORS = [
-    '#636EFA',
-    '#EF553B',
-    '#00CC96',
-    '#AB63FA',
-    '#FFA15A',
-    '#19D3F3',
-    '#FF6692',
-    '#B6E880',
-    '#FF97FF',
-    '#FECB52'
-    // Add more colors if needed
-];
+import colorThemes from '../color_themes.json';
 
 export default class HorizontalBarChartVisualization extends React.Component {
     static propTypes = {
@@ -26,6 +12,7 @@ export default class HorizontalBarChartVisualization extends React.Component {
                 query: PropTypes.string,
             })
         ),
+        colorTheme: PropTypes.string,
     };
 
     transformData = (rawData) => {
@@ -52,7 +39,7 @@ export default class HorizontalBarChartVisualization extends React.Component {
     };
 
     render() {
-        const { nrqlQueries } = this.props;
+        const { nrqlQueries, color } = this.props;
 
         if (!nrqlQueries || !nrqlQueries.length || !nrqlQueries[0].accountId || !nrqlQueries[0].query) {
             return <EmptyState />;
@@ -81,6 +68,8 @@ export default class HorizontalBarChartVisualization extends React.Component {
                             const xAxisLabel = data && data[0].metadata.groups[1].displayName; // Notice the change of index to '1'
                             const yAxisLabel = data && data[0].metadata.groups[0].displayName; // and '0' here to match the values properly
 
+                            const themeColors = Array.isArray(colorThemes[color]) ? colorThemes[color] : colorThemes['Plotly'];
+
                             const plotlyData = [
                                 {
                                     x,
@@ -88,7 +77,8 @@ export default class HorizontalBarChartVisualization extends React.Component {
                                     type: 'bar',
                                     orientation: 'h',
                                     marker: {
-                                        color: x.map((_, i) => PLOTLY_COLORS[i % PLOTLY_COLORS.length]) // Loop through colors
+                                        // Assign a color from themeColors based on the index of each bar
+                                        color: x.map((_, i) => themeColors[i % themeColors.length]),
                                     },
                                     hoverlabel: { namelength: -1 }
                                 }
@@ -117,6 +107,11 @@ export default class HorizontalBarChartVisualization extends React.Component {
                                     automargin: true,
                                     showgrid: true,
                                     type: 'category' // Categories are usually set on the y-axis for vertical bar charts
+                                },
+                                margin: {
+                                    t: 5,
+                                    b: 5,
+                                    pad: 10
                                 }
                             };
 

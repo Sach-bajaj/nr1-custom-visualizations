@@ -4,7 +4,7 @@
     "categoryTerms": [],
     "keywords": ["visualizations", "plotly", "recharts"],
     "repository": "https://github.com/pnvnd/nr1-custom-visualizations",
-    "whatsNew": "Added visualizations for horizonal and vertical bar charts\nUpdated examples in documentation\nUpdated screenshots",
+    "whatsNew": "Added color themes for vertical and horizontal bar charts\nAdded visualizations for horizonal and vertical bar charts\nUpdated examples in documentation\nUpdated screenshots",
     "support": {
       "email": {
         "address": "peternguyen@newrelic.com"

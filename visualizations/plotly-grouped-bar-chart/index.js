@@ -95,6 +95,11 @@ export default class GroupedBarChartVisualization extends React.Component {
                                 yaxis: {
                                     title: yAxisLabel,
                                     automargin: true
+                                },
+                                margin: {
+                                    t: 0,
+                                    b: 0,
+                                    pad: 10
                                 }
                             };
 

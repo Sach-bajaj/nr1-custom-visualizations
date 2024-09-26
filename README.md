@@ -99,16 +99,25 @@ npm -v
 ## Setup NR1 CLI
 Get the New Relic One Command Line Interface (nr1-cli) here:
 
-| OS | Direct Link |
-| :- | :---------- |
-| Windows | https://cli.nr-ext.net/installer.exe |
-| Linux | `curl -s https://cli.nr-ext.net/installer.sh \| sudo bash` |
-| Mac | https://cli.nr-ext.net/installer.pkg |
+| OS      | Direct Link                                                |
+| :------ | :--------------------------------------------------------- |
+| Windows | https://cli.nr-ext.net/installer.exe                       |
+| Linux   | `curl -s https://cli.nr-ext.net/installer.sh \| sudo bash` |
+| Mac     | https://cli.nr-ext.net/installer.pkg                       |
 
 Once `NR1 CLI` is installed, run the following to set up your profile
 ```
 nr1 profiles:add --name <your-profile-name> --api-key NRAK-XXXXXXXXXXXXXXXXXXXXXXXXXXX --region us
 ```
+
+If you get the following error:
+```
+ ›   Error: Please accept the New Relic Developer Terms and Conditions prior to executing this operation.
+ ›   Code: TERMS_AND_CONDITIONS_NOT_ACCEPTED
+
+```
+
+Go to https://one.newrelic.com/developer-center and generate a new User API key. This should give you the option to review and accept the developer agreement to let you continue.
 
 Check to make sure you are in the correct profile by using this command:
 ```
@@ -165,6 +174,8 @@ Paste in the link from the console and check out the Nerdpack.  Once everything 
 
 ```
 nr1 nerdpack:publish
+nr1 nerdpack:deploy
+nr1 nerdpack:subscribe
 ```
 
 ## Update Nerdpack

@@ -134,6 +134,11 @@ export default class ParetoChartVisualization extends React.Component {
                                         weight: 'bold'
                                     }
                                 },
+                                margin: {
+                                    t: 0,
+                                    b: 0,
+                                    pad: 10
+                                },
                                 legend: {
                                     orientation: 'h',
                                     y: 1.1,

@@ -111,6 +111,11 @@ export default class StackedBarChartVisualization extends React.Component {
                                     tickvals: [0, 20, 40, 60, 80, 100],
                                     ticktext: ['0%', '20%', '40%', '60%', '80%', '100%']
                                 },
+                                margin: {
+                                    t: 0,
+                                    b: 0,
+                                    pad: 10
+                                },
                                 legend: {
                                     orientation: 'h',
                                     y: -0.1 // Legend just below the chart

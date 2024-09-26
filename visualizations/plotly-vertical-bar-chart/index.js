@@ -2,21 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Card, CardBody, HeadingText, NrqlQuery, Spinner, AutoSizer } from 'nr1';
 import Plot from 'react-plotly.js';
-
-// Define the color sequence directly within the code
-const PLOTLY_COLORS = [
-    '#636EFA',
-    '#EF553B',
-    '#00CC96',
-    '#AB63FA',
-    '#FFA15A',
-    '#19D3F3',
-    '#FF6692',
-    '#B6E880',
-    '#FF97FF',
-    '#FECB52'
-    // Add more colors if you have more bars than the number of colors here
-];
+import colorThemes from '../color_themes.json';
 
 export default class VerticalBarChartVisualization extends React.Component {
     static propTypes = {
@@ -26,6 +12,7 @@ export default class VerticalBarChartVisualization extends React.Component {
                 query: PropTypes.string,
             })
         ),
+        colorTheme: PropTypes.string,
     };
 
     transformData = (rawData) => {
@@ -51,7 +38,7 @@ export default class VerticalBarChartVisualization extends React.Component {
     };
 
     render() {
-        const { nrqlQueries } = this.props;
+        const { nrqlQueries, color } = this.props;
 
         if (!nrqlQueries || !nrqlQueries.length || !nrqlQueries[0].accountId || !nrqlQueries[0].query) {
             return <EmptyState />;
@@ -80,15 +67,15 @@ export default class VerticalBarChartVisualization extends React.Component {
                             const xAxisLabel = data && data[0].metadata.groups[0].displayName;
                             const yAxisLabel = data && data[0].metadata.groups[1].displayName;
 
-                            // Prepare data for Plotly - updated for vertical bar chart
+                            const themeColors = Array.isArray(colorThemes[color]) ? colorThemes[color] : colorThemes['Plotly'];
                             const plotlyData = [
                                 {
                                     x: categories,
                                     y: barData,
-                                    type: 'bar', // This creates vertical bars
-                                    orientation: 'v', // This line can be omitted as 'v' is the default value
+                                    type: 'bar',
+                                    orientation: 'v',
                                     marker: {
-                                        color: barData.map((_, i) => PLOTLY_COLORS[i % PLOTLY_COLORS.length])
+                                        color: barData.map((_, i) => themeColors[i % themeColors.length]),
                                     },
                                     hoverlabel: { namelength: -1 }
                                 }
@@ -120,6 +107,11 @@ export default class VerticalBarChartVisualization extends React.Component {
                                     automargin: true,
                                     showgrid: true,
                                     zeroline: false
+                                },
+                                margin: {
+                                    t: 5,
+                                    b: 5,
+                                    pad: 10
                                 }
                             };
 

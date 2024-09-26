@@ -22,6 +22,22 @@
                     "type": "nrql"
                 }
             ]
+        },
+        {
+            "name": "color",
+            "title": "Color Theme",
+            "description": "Pick a color theme",
+            "type": "enum",
+            "items": [
+                { "title": "Plotly", "value": "Plotly" },
+                { "title": "D3", "value": "D3" },
+                { "title": "G10", "value": "G10" },
+                { "title": "T10", "value": "T10" },
+                { "title": "Alphabet", "value": "Alphabet" },
+                { "title": "Dark24", "value": "Dark24" },
+                { "title": "Light24", "value": "Light24" }
+            ],
+            "default": "Plotly"
         }
     ]
 }
