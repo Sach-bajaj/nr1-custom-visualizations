@@ -15,10 +15,9 @@ export default class GroupedBarChartVisualization extends React.Component {
 
     transformData = (rawData) => {
         const transformedData = [];
-    
+        // console.log(rawData);
         // Construct the initial data structure from the raw data
         rawData.forEach(({ metadata, data }) => {
-            console.log(rawData);
             const facet1 = metadata.groups[1].value;
             const facet2 = metadata.groups[2].value;
     

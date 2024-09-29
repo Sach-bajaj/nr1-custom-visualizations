@@ -2,9 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Card, CardBody, HeadingText, NrqlQuery, Spinner, AutoSizer } from 'nr1';
 import Plot from 'react-plotly.js';
-import colorThemes from '../color_themes.json';
 
-export default class HorizontalBarChartVisualization extends React.Component {
+export default class HeatmapVisualization extends React.Component {
     static propTypes = {
         nrqlQueries: PropTypes.arrayOf(
             PropTypes.shape({
@@ -12,39 +11,51 @@ export default class HorizontalBarChartVisualization extends React.Component {
                 query: PropTypes.string,
             })
         ),
-        colorTheme: PropTypes.string,
+        color: PropTypes.string
     };
 
     transformData = (rawData) => {
         const transformedData = [];
+        const xLabels = new Set();
+        const yLabels = new Set();
 
-        // Construct the initial data structure from raw data
         rawData.forEach(({ metadata, data }) => {
-            const facet = metadata.groups[1].value;
-            const value = data[0].y;
-            transformedData.push({ name: facet, value });
+            const facet1 = metadata.groups[1].value; // Y-axis facet
+            const facet2 = metadata.groups[2].value; // X-axis facet
+            const value = data[0].y; // The value for the heatmap cell
+            
+            yLabels.add(facet1);
+            xLabels.add(facet2);
+
+            transformedData.push({ x: facet2, y: facet1, value });
         });
 
-        // Sort the transformedData by value in descending order
-        transformedData.sort((a, b) => b.value - a.value);
+        // Convert sets to arrays
+        const xArray = Array.from(xLabels);
+        const yArray = Array.from(yLabels);
 
-        // Map to x and y for the bars
-        const x = transformedData.map((entry) => entry.value);
-        const y = transformedData.map((entry) => entry.name);
+        // Prepare a matrix for the heatmap
+        const zMatrix = yArray.map(yLabel =>
+            xArray.map(xLabel => {
+                const entry = transformedData.find(d => d.x === xLabel && d.y === yLabel);
+                return entry ? entry.value : 0; // Default to 0 if no value
+            })
+        );
 
         return {
-            x: x.reverse(), // Reverse the order to have the longest bar at the top
-            y: y.reverse(), // Also reverse the category labels to maintain the correct association
+            z: zMatrix,
+            x: xArray,
+            y: yArray
         };
     };
 
     render() {
         const { nrqlQueries, color } = this.props;
-
+        
         if (!nrqlQueries || !nrqlQueries.length || !nrqlQueries[0].accountId || !nrqlQueries[0].query) {
             return <EmptyState />;
         }
-
+        
         return (
             <AutoSizer>
                 {({ width, height }) => (
@@ -62,55 +73,56 @@ export default class HorizontalBarChartVisualization extends React.Component {
                                 return <ErrorState />;
                             }
 
-                            const { x, y } = this.transformData(data);
+                            const { z, x, y } = this.transformData(data);
 
-                            // Fetch the axis labels, swapping the labels for the vertical chart
-                            const xAxisLabel = data && data[0].metadata.groups[1].displayName; // Notice the change of index to '1'
-                            const yAxisLabel = data && data[0].metadata.groups[0].displayName; // and '0' here to match the values properly
+                            // Fetch the axis labels
+                            const xAxisLabel = data && data[0].metadata.groups[0].displayName;
+                            const yAxisLabel = data && data[0].metadata.groups[1].displayName;
 
-                            const themeColors = Array.isArray(colorThemes.discrete[color]) ? colorThemes.discrete[color] : colorThemes.discrete['Plotly'];
+                            // Check if x contains weekdays
+                            const isWeekday = x.some(xLabel => 
+                                ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].includes(xLabel)
+                            );
 
-                            const plotlyData = [
-                                {
-                                    x,
-                                    y,
-                                    type: 'bar',
-                                    orientation: 'h',
-                                    marker: {
-                                        // Assign a color from themeColors based on the index of each bar
-                                        color: x.map((_, i) => themeColors[i % themeColors.length]),
-                                    },
-                                    hoverlabel: { namelength: -1 }
-                                }
-                            ];
+                            let xAxisCategories;
 
+                            if (isWeekday) {
+                                // Define the order of the weekdays
+                                const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                                const uniqueXLabels = new Set(x);
+                                xAxisCategories = daysOfWeek.filter(day => uniqueXLabels.has(day));
+                            } else {
+                                xAxisCategories = x; // Fallback to the original x labels
+                            }
+
+                            // Create the heatmap data
+                            const plotlyData = [{
+                                z,
+                                x: xAxisCategories,
+                                y,
+                                type: 'heatmap',
+                                colorscale: color,
+                                colorbar: {
+                                    title: xAxisLabel,
+                                },
+                            }];
+                            
                             // Create the layout
                             const layout = {
-                                barmode: 'group',
                                 xaxis: {
-                                    title: {
-                                        text: yAxisLabel,
-                                        font: {
-                                            weight: 'bold'
-                                        }
-                                    },
                                     automargin: true,
-                                    showgrid: true,
+                                    tickmode: 'array',
                                 },
                                 yaxis: {
-                                    title: {
-                                        text: xAxisLabel,
-                                        font: {
-                                            weight: 'bold'
-                                        }
-                                    },
+                                    title: yAxisLabel,
                                     automargin: true,
-                                    showgrid: true,
-                                    type: 'category' // Categories are usually set on the y-axis for vertical bar charts
+                                    tickmode: 'linear', // Ensure all y-axis tick marks are shown
+                                    //tickvals: y, // Use the full set of y values as tick marks
+                                   // ticktext: y, // Show the corresponding text labels
                                 },
                                 margin: {
-                                    t: 5,
-                                    b: 5,
+                                    t: 40,
+                                    b: 40,
                                     pad: 10
                                 }
                             };
@@ -150,10 +162,10 @@ const EmptyState = () => (
                 spacingType={[HeadingText.SPACING_TYPE.MEDIUM]}
                 type={HeadingText.TYPE.HEADING_4}
             >
-                An example NRQL query you can try is (remember to only use ONE facet):
+                An example NRQL query you can try is:
             </HeadingText>
             <code>
-                SELECT sum(GigabytesIngested) FROM NrConsumption WHERE usageMetric NOT IN ('MetricsBytes','CustomEventsBytes') FACET usageMetric SINCE 1 MONTH AGO LIMIT MAX
+                SELECT sum(GigabytesIngested) FROM NrConsumption FACET dayOfMonthOf(timestamp), weekdayOf(timestamp) SINCE THIS MONTH LIMIT MAX
             </code>
         </CardBody>
     </Card>

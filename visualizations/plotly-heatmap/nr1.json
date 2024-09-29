@@ -1,0 +1,49 @@
+{
+    "schemaType": "VISUALIZATION",
+    "id": "plotly-heat-map",
+    "displayName": "Heatmap",
+    "description": "A heatmap created with Plotly",
+    "configuration": [
+        {
+            "name": "nrqlQueries",
+            "title": "NRQL Queries",
+            "type": "collection",
+            "items": [
+                {
+                    "name": "accountId",
+                    "title": "Account ID",
+                    "description": "Account ID to be associated with the query",
+                    "type": "account-id"
+                },
+                {
+                    "name": "query",
+                    "title": "Query",
+                    "description": "NRQL query for visualization",
+                    "type": "nrql"
+                }
+            ]
+        },
+        {
+            "name": "color",
+            "title": "Color Theme",
+            "description": "Pick a color theme",
+            "type": "enum",
+            "items": [
+                { "title": "Blackbody", "value": "Blackbody"},
+                { "title": "Bluered", "value": "Bluered"},
+                { "title": "Blues", "value": "Blues"},
+                { "title": "Cividis", "value": "Cividis"},
+                { "title": "Earth", "value": "Earth"},
+                { "title": "Electric", "value": "Electric"},
+                { "title": "Greens", "value": "Greens"},
+                { "title": "Greys", "value": "Greys"},
+                { "title": "Hot", "value": "Hot"},
+                { "title": "Jet", "value": "Jet"},
+                { "title": "Picnic", "value": "Picnic"},
+                { "title": "Portland", "value": "Portland"},
+                { "title": "Rainbow", "value": "Rainbow"},
+                { "title": "Viridis", "value": "Viridis"}
+            ]
+        }
+    ]
+}

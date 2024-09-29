@@ -17,6 +17,18 @@ WHERE appName='my-web-app'
 FACET userAgentName, countryCode
 SINCE THIS MONTH LIMIT MAX
 ```
+### HeatMap
+This is a Heatmap with two FACETs made with Plotly.
+![Heatmap](/visualizations/plotly-heatmap/heatmap.png)
+
+#### Use Cases
+Break down ingest by weekday and date.
+```sql
+SELECT sum(GigabytesIngested)
+FROM NrConsumption
+FACET dayOfMonthOf(timestamp), weekdayOf(timestamp)
+SINCE THIS MONTH LIMIT MAX
+```
 
 ### 100% Stacked Bar Chart
 A variation on the stacked bar chart where each bar adds up to 100% using two FACETs.

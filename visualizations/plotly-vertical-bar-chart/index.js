@@ -67,7 +67,7 @@ export default class VerticalBarChartVisualization extends React.Component {
                             const xAxisLabel = data && data[0].metadata.groups[0].displayName;
                             const yAxisLabel = data && data[0].metadata.groups[1].displayName;
 
-                            const themeColors = Array.isArray(colorThemes[color]) ? colorThemes[color] : colorThemes['Plotly'];
+                            const themeColors = Array.isArray(colorThemes.discrete[color]) ? colorThemes.discrete[color] : colorThemes.discrete['Plotly'];
                             const plotlyData = [
                                 {
                                     x: categories,
