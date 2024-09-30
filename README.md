@@ -30,6 +30,19 @@ FACET dayOfMonthOf(timestamp), weekdayOf(timestamp)
 SINCE THIS MONTH LIMIT MAX
 ```
 
+### Sankey Diagram
+This is a Sankey Diagram with two FACETs made with Plotly.
+![Sankey Diagram](/visualizations/plotly-sankey-diagram/sankey-diagram.png)
+
+#### Use Cases
+See the flow of `BrowserInteraction` for all of your browser applications.
+```sql
+SELECT count(*)
+FROM BrowserInteraction
+FACET previousGroupedUrl, targetGroupedUrl
+SINCE 24 HOURS AGO LIMIT MAX
+```
+
 ### 100% Stacked Bar Chart
 A variation on the stacked bar chart where each bar adds up to 100% using two FACETs.
 ![100% Stacked Bar Chart](/visualizations/plotly-100-stacked-bar-chart/100-stacked-bar-chart.png)
