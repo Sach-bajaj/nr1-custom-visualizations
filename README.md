@@ -70,7 +70,7 @@ FACET usageMetric
 SINCE THIS MONTH LIMIT MAX
 ```
 
-### Cumulative Sum CHart
+### Cumulative Sum Chart
 Using two FACETs, we can create a cumulative sum chart.
 ![Cumulative Sum Chart](/visualizations/plotly-cumulative-sum-chart/cumulative-sum-chart.png)
 
