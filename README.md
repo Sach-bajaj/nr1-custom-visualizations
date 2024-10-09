@@ -70,6 +70,19 @@ FACET usageMetric
 SINCE THIS MONTH LIMIT MAX
 ```
 
+### Cumulative Sum CHart
+Using two FACETs, we can create a cumulative sum chart.
+![Cumulative Sum Chart](/visualizations/plotly-cumulative-sum-chart/cumulative-sum-chart.png)
+
+#### Use Cases
+Get cumulative sum of sales data over time
+```sql
+SELECT sum(numeric(Value)) AS 'Cumulative Sum'
+FROM lookup(salesData)
+FACET Date, `Product Sold` 
+```
+
+
 ### Vertical Bar Chart
 Using a single FACET we can get a vertical bar chart with grid enabled.
 ![100% Stacked Bar Chart](/visualizations/plotly-vertical-bar-chart/vertical-bar-chart.png)
