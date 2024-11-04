@@ -134,7 +134,19 @@ export default class SimpleBarChartVisualization extends React.Component {
                             // Extract the keys for the countries across all transformed data
                             const facetKeys = transformedData
                                 .flatMap(entry => Object.keys(entry))
-                                .filter(key => key !== 'name');
+                                .filter(key => key !== 'name')
+                                .sort((a, b) => {
+                                        const monthOrder = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+                                        const [aMonth, aYear] = a.split(" ");
+                                        const [bMonth, bYear] = b.split(" ");
+                                
+                                        if (aYear !== bYear) {
+                                            return parseInt(aYear) - parseInt(bYear);
+                                        }
+                                
+                                        return monthOrder.indexOf(aMonth) - monthOrder.indexOf(bMonth);
+                                    });
                             const uniqueFacetKeys = Array.from(new Set(facetKeys));
         
                             return (
