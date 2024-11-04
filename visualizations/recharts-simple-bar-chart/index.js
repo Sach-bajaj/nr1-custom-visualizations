@@ -46,6 +46,10 @@ export default class SimpleBarChartVisualization extends React.Component {
         // Construct the initial data structure from the raw data
         rawData.forEach(({ metadata, data }) => {
             // console.log(rawData);
+            if (metadata.groups < 2) {
+                return;
+            }
+            
             const facet1 = metadata.groups[1].value;
             const facet2 = metadata.groups[2].value;
     
