@@ -63,7 +63,7 @@ export default class SimpleBarChartVisualization extends React.Component {
     
         // Now sort the transformed data by the 'name' property (alphabetically)
         const sortedTransformedData = transformedData.sort((a, b) => {
-            const aName = a.name, bName = b.name;
+            const aName = a.timestamp, bName = b.timestamp;
             const aIsNumber = !isNaN(Number(aName));
             const bIsNumber = !isNaN(Number(bName));
         
