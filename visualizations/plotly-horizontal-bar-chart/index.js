@@ -20,9 +20,12 @@ export default class HorizontalBarChartVisualization extends React.Component {
 
         // Construct the initial data structure from raw data
         rawData.forEach(({ metadata, data }) => {
-            const facet = metadata.groups[1].value;
-            const value = data[0].y;
-            transformedData.push({ name: facet, value });
+            //console.log(rawData);
+            if (metadata.name !== "Other" && metadata.name !== "Daylight saving time") {
+                const facet = metadata.groups[1] ? metadata.groups[1].value : "unknown";
+                const value = data[0].y;
+                transformedData.push({ name: facet, value });
+            }
         });
 
         // Sort the transformedData by value in descending order
@@ -33,7 +36,7 @@ export default class HorizontalBarChartVisualization extends React.Component {
         const y = transformedData.map((entry) => entry.name);
 
         return {
-            x: x.reverse(), // Reverse the order to have the longest bar at the top
+            x: x, // Use .reverse() to flip the order to have the longest bar at the top
             y: y.reverse(), // Also reverse the category labels to maintain the correct association
         };
     };
@@ -65,8 +68,9 @@ export default class HorizontalBarChartVisualization extends React.Component {
                             const { x, y } = this.transformData(data);
 
                             // Fetch the axis labels, swapping the labels for the vertical chart
-                            const xAxisLabel = data && data[0].metadata.groups[1].displayName; // Notice the change of index to '1'
-                            const yAxisLabel = data && data[0].metadata.groups[0].displayName; // and '0' here to match the values properly
+                            const xAxisLabel = data && data[0].metadata.groups[0].displayName;
+                            const yAxisLabel = data && data[0].metadata.groups[1].displayName;
+
 
                             const themeColors = Array.isArray(colorThemes.discrete[color]) ? colorThemes.discrete[color] : colorThemes.discrete['Plotly'];
 
@@ -89,7 +93,7 @@ export default class HorizontalBarChartVisualization extends React.Component {
                                 barmode: 'group',
                                 xaxis: {
                                     title: {
-                                        text: yAxisLabel,
+                                        text: xAxisLabel,
                                         font: {
                                             weight: 'bold'
                                         }
@@ -99,10 +103,11 @@ export default class HorizontalBarChartVisualization extends React.Component {
                                 },
                                 yaxis: {
                                     title: {
-                                        text: xAxisLabel,
+                                        text: yAxisLabel,
                                         font: {
                                             weight: 'bold'
-                                        }
+                                        },
+                                        standoff: 20 // Adjust this value to move the y-axis label further to the left
                                     },
                                     automargin: true,
                                     showgrid: true,
@@ -153,7 +158,7 @@ const EmptyState = () => (
                 An example NRQL query you can try is (remember to only use ONE facet):
             </HeadingText>
             <code>
-                SELECT sum(GigabytesIngested) FROM NrConsumption WHERE usageMetric NOT IN ('MetricsBytes','CustomEventsBytes') FACET usageMetric SINCE 1 MONTH AGO LIMIT MAX
+                SELECT sum(GigabytesIngested) FROM NrConsumption FACET monthOf(timestamp), usageMetric SINCE 1 YEAR AGO LIMIT MAX
             </code>
         </CardBody>
     </Card>

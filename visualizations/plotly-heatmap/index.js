@@ -20,14 +20,17 @@ export default class HeatmapVisualization extends React.Component {
         const yLabels = new Set();
 
         rawData.forEach(({ metadata, data }) => {
-            const facet1 = metadata.groups[1].value; // Y-axis facet
-            const facet2 = metadata.groups[2].value; // X-axis facet
-            const value = data[0].y; // The value for the heatmap cell
-            
-            yLabels.add(facet1);
-            xLabels.add(facet2);
-
-            transformedData.push({ x: facet2, y: facet1, value });
+            //console.log(rawData);
+            if (metadata.name !== "Other" && metadata.name !== "Daylight saving time") {
+                const facet1 = metadata.groups[1] ? metadata.groups[1].value : "unknown";
+                const facet2 = metadata.groups[2] ? metadata.groups[2].value : "unknown";
+                const value = data[0].y; // The value for the heatmap cell
+                
+                yLabels.add(facet1);
+                xLabels.add(facet2);
+    
+                transformedData.push({ x: facet2, y: facet1, value });
+            }
         });
 
         // Convert sets to arrays

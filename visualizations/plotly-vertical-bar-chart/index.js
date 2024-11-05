@@ -20,9 +20,12 @@ export default class VerticalBarChartVisualization extends React.Component {
 
         // Construct the initial data structure from raw data
         rawData.forEach(({ metadata, data }) => {
-            const facet1 = metadata.groups[1].value;
-            const value = data[0].y;
-            transformedData.push({ name: facet1, value });
+            //console.log(rawData);
+            if (metadata.name !== "Other" && metadata.name !== "Daylight saving time") {
+                const facet = metadata.groups[1] ? metadata.groups[1].value : "unknown";
+                const value = data[0].y;
+                transformedData.push({ name: facet, value });
+            }
         });
 
         // Sort the transformedData by value in descending order
@@ -89,7 +92,8 @@ export default class VerticalBarChartVisualization extends React.Component {
                                         text: xAxisLabel,
                                         font: {
                                             weight: 'bold'
-                                        }
+                                        },
+                                        standoff: 20
                                     },
                                     automargin: true,
                                     showgrid: true,
@@ -102,7 +106,8 @@ export default class VerticalBarChartVisualization extends React.Component {
                                         text: yAxisLabel,
                                         font: {
                                             weight: 'bold'
-                                        }
+                                        },
+                                        standoff: 20
                                     },
                                     automargin: true,
                                     showgrid: true,

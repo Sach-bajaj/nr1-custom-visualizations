@@ -14,6 +14,26 @@ export default class SimpleBarChartVisualization extends React.Component {
         ),
     };
 
+    // Function to sort by monthOf or weekdayOf
+    sortByMonthAndYearOrWeekday = (a, b) => {
+        const monthOrder = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        const weekdayOrder = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        
+        // Check if the facet contains a weekday
+        if (weekdayOrder.includes(a) && weekdayOrder.includes(b)) {
+            return weekdayOrder.indexOf(a) - weekdayOrder.indexOf(b);
+        }
+
+        const [aMonth, aYear] = a.split(" ");
+        const [bMonth, bYear] = b.split(" ");
+
+        if (aYear !== bYear) {
+            return parseInt(aYear) - parseInt(bYear);
+        }
+
+        return monthOrder.indexOf(aMonth) - monthOrder.indexOf(bMonth);
+    };
+
     transformData = (rawData) => {
         const transformedData = [];
         const chartColors = {};
@@ -45,40 +65,33 @@ export default class SimpleBarChartVisualization extends React.Component {
     
         // Construct the initial data structure from the raw data
         rawData.forEach(({ metadata, data }) => {
-            // console.log(rawData);
-            const facet1 = metadata.groups[1].value;
-            const facet2 = metadata.groups[2].value;
-    
-            // Find or create an entry for facet1Value
-            let entry = transformedData.find(e => e.name === facet1);
-            if (!entry) {
-                entry = { name: facet1 };
-                transformedData.push(entry);
+            //console.log(rawData);
+            if (metadata.name !== "Other" && metadata.name !== "Daylight saving time") {
+                const facet1 = metadata.groups[1].value;
+                const facet2 = metadata.groups[2].value;
+        
+                // Find or create an entry for facet1Value
+                let entry = transformedData.find(e => e.name === facet1);
+                if (!entry) {
+                    entry = { name: facet1 };
+                    transformedData.push(entry);
+                }
+        
+                // Assign the data and color
+                entry[facet2] = data[0].y;
+                chartColors[facet2] = invertColor(metadata.color);
             }
-    
-            // Assign the data and color
-            entry[facet2] = data[0].y;
-            chartColors[facet2] = invertColor(metadata.color);
         });
     
-        // Now sort the transformed data by the 'name' property (alphabetically)
-        const sortedTransformedData = transformedData.sort((a, b) => {
-            const aName = a.name, bName = b.name;
-            const aIsNumber = !isNaN(Number(aName));
-            const bIsNumber = !isNaN(Number(bName));
-        
-            // If both are numbers, compare as numbers
-            if (aIsNumber && bIsNumber) {
-                return Number(aName) - Number(bName);
-            }
-        
-            // If one is a number and the other isn't, the number comes first
-            if (aIsNumber) return -1;
-            if (bIsNumber) return 1;
-        
-            // If both are not numbers, compare as strings
-            return aName.localeCompare(bName);
-        });
+        // Sort the transformed data by the 'name' property (alphabetically or by month/year/weekday)
+        const sortedTransformedData = transformedData.sort((a, b) => this.sortByMonthAndYearOrWeekday(a.name, b.name));
+
+        // Extract the keys for the facets across all transformed data
+        const facetKeys = sortedTransformedData
+            .flatMap(entry => Object.keys(entry))
+            .filter(key => key !== 'name')
+            .sort(this.sortByMonthAndYearOrWeekday);
+        const uniqueFacetKeys = Array.from(new Set(facetKeys));
 
         // As we need to return the yAxisLabel too, let's fetch it here
         const yAxisLabel = rawData && rawData.length > 0 && rawData[0].metadata.groups[0].displayName
@@ -88,7 +101,8 @@ export default class SimpleBarChartVisualization extends React.Component {
         return {
             data: sortedTransformedData,
             chartColors,
-            yAxisLabel // Include this additional field to hold the Y-Axis Label
+            yAxisLabel, // Include this additional field to hold the Y-Axis Label
+            uniqueFacetKeys
         };
     };
 
@@ -129,13 +143,7 @@ export default class SimpleBarChartVisualization extends React.Component {
                                 return <ErrorState />;
                             }
         
-                            const { data: transformedData, chartColors, yAxisLabel } = this.transformData(data);
-                            
-                            // Extract the keys for the countries across all transformed data
-                            const facetKeys = transformedData
-                                .flatMap(entry => Object.keys(entry))
-                                .filter(key => key !== 'name');
-                            const uniqueFacetKeys = Array.from(new Set(facetKeys));
+                            const { data: transformedData, chartColors, yAxisLabel, uniqueFacetKeys } = this.transformData(data);
         
                             return (
                                 <BarChart

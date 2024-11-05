@@ -21,10 +21,13 @@ export default class ParetoChartVisualization extends React.Component {
         // Construct the initial data structure from raw data and calculate total
         let grandTotal = 0;
         rawData.forEach(({ metadata, data }) => {
-            const facet1 = metadata.groups[1].value;
-            const value = data[0].y;
-            grandTotal += value;
-            transformedData.push({ name: facet1, value });
+            //console.log(rawData);
+            if (metadata.name !== "Other" && metadata.name !== "Daylight saving time") {
+                const facet1 = metadata.groups[1] ? metadata.groups[1].value : "unknown";
+                const value = data[0].y;
+                grandTotal += value;
+                transformedData.push({ name: facet1, value });
+            }
         });
 
         // Sort the transformedData by value in descending order
@@ -104,9 +107,9 @@ export default class ParetoChartVisualization extends React.Component {
                                     title: {
                                         text: xAxisLabel,
                                         font: {
-                                            // Make axis label bold
                                             weight: 'bold'
-                                        }
+                                        },
+                                        standoff: 20
                                     },
                                     automargin: true,
                                     showgrid: false
@@ -115,9 +118,9 @@ export default class ParetoChartVisualization extends React.Component {
                                     title: {
                                         text: yAxisLabel,
                                         font: {
-                                            // Make axis label bold
                                             weight: 'bold'
-                                        }
+                                        },
+                                        standoff: 20
                                     },
                                     automargin: true,
                                     showgrid: false,

@@ -13,35 +13,71 @@ export default class CumulativeSumChartVisualization extends React.Component {
         ),
     };
 
+    // Function to sort by monthOf or weekdayOf
+    sortByMonthAndYearOrWeekday = (a, b) => {
+        const monthOrder = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        const weekdayOrder = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        
+        // Check if the facet contains a weekday
+        if (weekdayOrder.includes(a) && weekdayOrder.includes(b)) {
+            return weekdayOrder.indexOf(a) - weekdayOrder.indexOf(b);
+        }
+
+        const [aMonth, aYear] = a.split(" ");
+        const [bMonth, bYear] = b.split(" ");
+
+        if (aYear !== bYear) {
+            return parseInt(aYear) - parseInt(bYear);
+        }
+
+        return monthOrder.indexOf(aMonth) - monthOrder.indexOf(bMonth);
+    };
+
     transformData = (rawData) => {
         const transformedData = [];
 
+        // Construct the initial data structure from the raw data
         rawData.forEach(({ metadata, data }) => {
-            const facet1 = metadata.groups[1].value;
-            const facet2 = metadata.groups[2].value;
+            //console.log(rawData);
+            if (metadata.name !== "Other" && metadata.name !== "Daylight saving time") {
+                const facet1 = metadata.groups[1] ? metadata.groups[1].value : "unknown";
+                const facet2 = metadata.groups[2] ? metadata.groups[2].value : "unknown";
+        
+                let entry = transformedData.find(e => e.name === facet1);
+                if (!entry) {
+                    entry = { name: facet1 };
+                    transformedData.push(entry);
+                }
     
-            let entry = transformedData.find(e => e.name === facet1);
-            if (!entry) {
-                entry = { name: facet1 };
-                transformedData.push(entry);
+                entry[facet2] = data[0].y;
             }
-
-            entry[facet2] = data[0].y;
         });
-    
+
+        // Sort the transformed data by the 'name' property (alphabetically or by month/year/weekday)
+        const sortedTransformedData = transformedData.sort((a, b) => this.sortByMonthAndYearOrWeekday(a.name, b.name));
+
+        // Extract the keys for the facets across all transformed data
+        const facetKeys = sortedTransformedData
+            .flatMap(entry => Object.keys(entry))
+            .filter(key => key !== 'name')
+            .sort(this.sortByMonthAndYearOrWeekday);
+        const uniqueFacetKeys = Array.from(new Set(facetKeys));
+
+        // As we need to return the yAxisLabel too, let's fetch it here
         const yAxisLabel = rawData && rawData.length > 0 && rawData[0].metadata.groups[0].displayName
             ? rawData[0].metadata.groups[0].displayName
             : 'Y-Axis';
 
         return {
-            data: transformedData,
-            yAxisLabel
+            data: sortedTransformedData,
+            yAxisLabel,
+            uniqueFacetKeys
         };
     };
 
     calculateCumulativeSum = (data) => {
         // Sort data based on facet1 (assumed to be the 'name' property)
-        const sortedData = [...data].sort((a, b) => a.name.localeCompare(b.name));
+        const sortedData = [...data].sort((a, b) => this.sortByMonthAndYearOrWeekday(a.name, b.name));
 
         const cumulativeData = {};
         const result = [];
@@ -95,14 +131,10 @@ export default class CumulativeSumChartVisualization extends React.Component {
                                 return null;  // Return null instead of <ErrorState />
                             }
 
-                            const { data: transformedData, yAxisLabel } = this.transformData(data);
+                            const { data: transformedData, yAxisLabel, uniqueFacetKeys } = this.transformData(data);
                             const cumulativeData = this.calculateCumulativeSum(transformedData);
 
-                            const facetKeys = cumulativeData
-                                .flatMap(entry => Object.keys(entry))
-                                .filter(key => key !== 'name');
-                            const uniqueFacetKeys = Array.from(new Set(facetKeys)).sort();
-
+                            // Prepare data for Plotly
                             const plotlyData = uniqueFacetKeys.map(facet2 => ({
                                 x: cumulativeData.map(entry => entry.name),
                                 y: cumulativeData.map(entry => entry[facet2] || 0),
@@ -111,19 +143,25 @@ export default class CumulativeSumChartVisualization extends React.Component {
                                 hoverlabel: { namelength: -1 }
                             }));
 
+                            // Create the layout
                             const layout = {
                                 xaxis: {
                                     automargin: true 
                                 },
                                 yaxis: {
-                                    title: yAxisLabel,
+                                    title: {
+                                        text: yAxisLabel,
+                                        font: {
+                                            weight: 'bold'
+                                        },
+                                        standoff: 20 // Adjust this value to move the y-axis label further to the left
+                                    },
                                     automargin: true
                                 },
                                 legend: {
-                                    x: 1.1,
-                                    y: 0,
-                                    xanchor: 'right',
-                                    yanchor: 'bottom'
+                                    orientation: 'h',
+                                    yanchor: 'top',
+                                    y: -0.2 // Legend just below the chart
                                 },
                                 margin: {
                                     t: 0,
@@ -132,6 +170,7 @@ export default class CumulativeSumChartVisualization extends React.Component {
                                 }
                             };
 
+                            // Create the configuration object to remove Plotly logo
                             const config = {
                                 displaylogo: false
                             };
