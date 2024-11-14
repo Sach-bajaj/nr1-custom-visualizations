@@ -13,25 +13,57 @@ export default class GroupedBarChartVisualization extends React.Component {
         ),
     };
 
+    // Function to sort by monthOf or weekdayOf
+    sortByMonthAndYearOrWeekday = (a, b) => {
+        const monthOrder = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        const weekdayOrder = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        
+        // Check if the facet contains a weekday
+        if (weekdayOrder.includes(a) && weekdayOrder.includes(b)) {
+            return weekdayOrder.indexOf(a) - weekdayOrder.indexOf(b);
+        }
+
+        const [aMonth, aYear] = a.split(" ");
+        const [bMonth, bYear] = b.split(" ");
+
+        if (aYear !== bYear) {
+            return parseInt(aYear) - parseInt(bYear);
+        }
+
+        return monthOrder.indexOf(aMonth) - monthOrder.indexOf(bMonth);
+    };
+
     transformData = (rawData) => {
         const transformedData = [];
-        // console.log(rawData);
+
         // Construct the initial data structure from the raw data
         rawData.forEach(({ metadata, data }) => {
-            const facet1 = metadata.groups[1].value;
-            const facet2 = metadata.groups[2].value;
-    
-            // Find or create an entry for facet1Value
-            let entry = transformedData.find(e => e.name === facet1);
-            if (!entry) {
-                entry = { name: facet1 };
-                transformedData.push(entry);
-            }
-    
-            // Assign the data
-            entry[facet2] = data[0].y;
+            //console.log(rawData);
+            if (metadata.name !== "Other" && metadata.name !== "Daylight saving time") {
+                const facet1 = metadata.groups[1] ? metadata.groups[1].value : "unknown";
+                const facet2 = metadata.groups[2] ? metadata.groups[2].value : "unknown";
 
+                // Find or create an entry for facet1Value
+                let entry = transformedData.find(e => e.name === facet1);
+                if (!entry) {
+                    entry = { name: facet1 };
+                    transformedData.push(entry);
+                }
+
+                // Assign the data
+                entry[facet2] = data[0].y;
+            }
         });
+
+        // Sort the transformed data by the 'name' property (alphabetically or by month/year/weekday)
+        const sortedTransformedData = transformedData.sort((a, b) => this.sortByMonthAndYearOrWeekday(a.name, b.name));
+
+        // Extract the keys for the facets across all transformed data
+        const facetKeys = sortedTransformedData
+            .flatMap(entry => Object.keys(entry))
+            .filter(key => key !== 'name')
+            .sort(this.sortByMonthAndYearOrWeekday);
+        const uniqueFacetKeys = Array.from(new Set(facetKeys));
     
         // As we need to return the yAxisLabel too, let's fetch it here
         const yAxisLabel = rawData && rawData.length > 0 && rawData[0].metadata.groups[0].displayName
@@ -39,8 +71,9 @@ export default class GroupedBarChartVisualization extends React.Component {
         : 'Y-Axis'; // Default label if none found
 
         return {
-            data: transformedData,
-            yAxisLabel // Include this additional field to hold the Y-Axis Label
+            data: sortedTransformedData,
+            yAxisLabel, // Include this additional field to hold the Y-Axis Label
+            uniqueFacetKeys
         };
     };
 
@@ -68,13 +101,7 @@ export default class GroupedBarChartVisualization extends React.Component {
                                 return <ErrorState />;
                             }
         
-                            const { data: transformedData, yAxisLabel } = this.transformData(data);
-                            
-                            // Extract the keys for facets across all transformed data
-                            const facetKeys = transformedData
-                                .flatMap(entry => Object.keys(entry))
-                                .filter(key => key !== 'name');
-                            const uniqueFacetKeys = Array.from(new Set(facetKeys));
+                            const { data: transformedData, yAxisLabel, uniqueFacetKeys } = this.transformData(data);
         
                             // Prepare data for Plotly
                             const plotlyData = uniqueFacetKeys.map(facet2 => ({
@@ -89,10 +116,16 @@ export default class GroupedBarChartVisualization extends React.Component {
                             const layout = {
                                 barmode: 'group',
                                 xaxis: {
-                                    automargin: true 
+                                    automargin: true ,
                                 },
                                 yaxis: {
-                                    title: yAxisLabel,
+                                    title: {
+                                        text: yAxisLabel,
+                                        font: {
+                                            weight: 'bold'
+                                        },
+                                        standoff: 20 // Adjust this value to move the y-axis label further to the left
+                                    },
                                     automargin: true
                                 },
                                 margin: {
